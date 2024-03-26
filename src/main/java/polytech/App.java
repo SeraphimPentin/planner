@@ -9,7 +9,6 @@ public class App {
 
     public void init() {
         logger.info("---Start application---");
-//        Planner planner = new Planner();
     }
 
     public void run() {
