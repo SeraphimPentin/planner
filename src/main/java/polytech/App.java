@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import polytech.components.GetterThread;
 import polytech.components.Planner;
 import polytech.components.SubmitterThread;
-import polytech.domain.Task;
+import polytech.domain.ITask;
 
 import java.util.Comparator;
 import java.util.concurrent.BlockingQueue;
@@ -28,7 +28,7 @@ public class App {
         //app.init();
         //app.run();
 
-        BlockingQueue<Task> queue = new PriorityBlockingQueue<>(20, Comparator.comparing(Task::priority).reversed());
+        BlockingQueue<ITask> queue = new PriorityBlockingQueue<>(20, Comparator.comparing(ITask::priority).reversed());
         Planner planner = new Planner();
 
         SubmitterThread submitterThread = new SubmitterThread(queue);

@@ -1,16 +1,16 @@
 package polytech.components;
 
-import polytech.domain.Task;
+import polytech.domain.ITask;
 
 import java.util.concurrent.BlockingQueue;
 
 public class GetterThread extends Thread {
 
-    private final BlockingQueue<Task> queue;
+    private final BlockingQueue<ITask> queue;
     private final Planner planner;
     //private volatile boolean stop = true;
 
-    public GetterThread(BlockingQueue<Task> queue, Planner planner) {
+    public GetterThread(BlockingQueue<ITask> queue, Planner planner) {
         super("GetterThread");
         this.queue = queue;
         this.planner = planner;
@@ -19,7 +19,7 @@ public class GetterThread extends Thread {
     @Override
     public void run() {
         while (true) {
-            Task task = null;
+            ITask task;
             try {
                 task = queue.take();
                 System.out.println("Get task " + task.priority());
