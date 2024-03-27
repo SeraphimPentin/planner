@@ -34,7 +34,7 @@ public class Planner {
 
         FJPTask fjpTask = new FJPTask(task, highPrioritized);
         lowPrioritized.add(fjpTask);
-        forkJoinPool.submit(task);
+        forkJoinPool.submit(fjpTask);
     }
 
 }
