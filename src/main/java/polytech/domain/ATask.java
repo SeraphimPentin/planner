@@ -3,7 +3,7 @@ package polytech.domain;
 import polytech.enums.Priority;
 import polytech.enums.TypeTask;
 
-public abstract class ATask implements ITask {
+public abstract class ATask implements Task {
     private volatile TaskListener listener;
     private final Priority priority;
     private final TypeTask type;

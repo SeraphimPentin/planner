@@ -4,7 +4,7 @@ package polytech.components;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import polytech.domain.planner.FJPTask;
-import polytech.domain.ITask;
+import polytech.domain.Task;
 import polytech.enums.Priority;
 
 import java.util.HashMap;
@@ -26,7 +26,7 @@ public class Planner {
         suspendedTasks.put(Priority.LOWEST.getValue(), new ConcurrentLinkedQueue<>()); //FIXME remove
     }
 
-    public void addTask(ITask task) {
+    public void addTask(Task task) {
         int priority = task.priority().getValue();
 
         Queue<FJPTask> highPrioritized = suspendedTasks.get(priority + 1);

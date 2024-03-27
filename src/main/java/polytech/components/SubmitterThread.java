@@ -1,24 +1,24 @@
 package polytech.components;
 
 import polytech.domain.ATask;
-import polytech.domain.ITask;
+import polytech.domain.Task;
 import polytech.enums.Priority;
 import polytech.enums.TypeTask;
 
 import java.util.concurrent.BlockingQueue;
 
 public class SubmitterThread extends Thread {
-    private final BlockingQueue<ITask> queue;
+    private final BlockingQueue<Task> queue;
     private volatile boolean stop;
 
-    public SubmitterThread(BlockingQueue<ITask> queue) {
+    public SubmitterThread(BlockingQueue<Task> queue) {
         super("SubmitterThread");
         this.queue = queue;
     }
 
     @Override
     public void run() {
-        ITask task1 = new ATask(Priority.LOW, TypeTask.BASE) {
+        Task task1 = new ATask(Priority.LOW, TypeTask.BASE) {
             @Override
             public void run() {
                 System.out.println("Low doing 1st part of job");
@@ -31,7 +31,7 @@ public class SubmitterThread extends Thread {
         };
         queue.add(task1);
 
-        ITask task2 = new ATask(Priority.MIDDLE, TypeTask.BASE) {
+        Task task2 = new ATask(Priority.MIDDLE, TypeTask.BASE) {
             @Override
             public void run() {
                 System.out.println("Middle doing 1st part of job");
@@ -44,7 +44,7 @@ public class SubmitterThread extends Thread {
         };
         queue.add(task2);
 
-        ITask task3 = new ATask(Priority.LOW, TypeTask.BASE) {
+        Task task3 = new ATask(Priority.LOW, TypeTask.BASE) {
             @Override
             public void run() {
                 System.out.println("Low2 doing 1st part of job");
@@ -57,7 +57,7 @@ public class SubmitterThread extends Thread {
         };
         queue.add(task3);
 
-        ITask task4 = new ATask(Priority.HIGH, TypeTask.BASE) {
+        Task task4 = new ATask(Priority.HIGH, TypeTask.BASE) {
             @Override
             public void run() {
                 System.out.println("HIGH doing 1st part of job");

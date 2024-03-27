@@ -1,6 +1,6 @@
 package polytech.domain.planner;
 
-import polytech.domain.ITask;
+import polytech.domain.Task;
 import polytech.enums.BaseStates;
 
 import java.util.Queue;
@@ -8,11 +8,11 @@ import java.util.concurrent.RecursiveAction;
 
 public class FJPTask extends RecursiveAction {
     private final Queue<FJPTask> highPriorityTasks;
-    private final ITask task;
+    private final Task task;
 
     private volatile BaseStates state = BaseStates.SUSPENDED;
 
-    public FJPTask(ITask task, Queue<FJPTask> highPriorityTasks) {
+    public FJPTask(Task task, Queue<FJPTask> highPriorityTasks) {
         this.task = task;
         this.highPriorityTasks = highPriorityTasks;
         task.setListener(this::preemptIfNeeded);
