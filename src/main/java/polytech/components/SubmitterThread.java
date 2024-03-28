@@ -1,5 +1,7 @@
 package polytech.components;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import polytech.domain.ATask;
 import polytech.domain.Task;
 import polytech.enums.Priority;
@@ -10,6 +12,7 @@ import java.util.concurrent.BlockingQueue;
 public class SubmitterThread extends Thread {
     private final BlockingQueue<Task> queue;
     private volatile boolean stop;
+    private static final Logger logger = LoggerFactory.getLogger(SubmitterThread.class);
 
     public SubmitterThread(BlockingQueue<Task> queue) {
         super("SubmitterThread");
@@ -21,12 +24,12 @@ public class SubmitterThread extends Thread {
         Task task1 = new ATask(Priority.LOW, TypeTask.BASE) {
             @Override
             public void run() {
-                System.out.println("Low doing 1st part of job");
+                logger.info("LOW BASE task doing 1st part of job");
                 doSleep(1000);
                 notifyListenerAboutIterationDone();
-                System.out.println("Low doing 2nd part of job");
+                logger.info("LOW BASE task doing 2nd part of job");
                 doSleep(1000);
-                System.out.println("Low DONE");
+                logger.info("LOW BASE task DONE");
             }
         };
         queue.add(task1);
@@ -34,12 +37,12 @@ public class SubmitterThread extends Thread {
         Task task2 = new ATask(Priority.MIDDLE, TypeTask.BASE) {
             @Override
             public void run() {
-                System.out.println("Middle doing 1st part of job");
+                logger.info("MIDDLE BASE  task doing 1st part of job");
                 doSleep(2000);
                 notifyListenerAboutIterationDone();
-                System.out.println("Middle doing 2nd part of job");
+                logger.info("MIDDLE BASE task doing 2nd part of job");
                 doSleep(2000);
-                System.out.println("Middle DONE");
+                logger.info("MIDDLE BASE task DONE");
             }
         };
         queue.add(task2);
@@ -47,12 +50,12 @@ public class SubmitterThread extends Thread {
         Task task3 = new ATask(Priority.LOW, TypeTask.BASE) {
             @Override
             public void run() {
-                System.out.println("Low2 doing 1st part of job");
+                logger.info("LOW2 BASE task doing 1st part of job");
                 doSleep(1000);
                 notifyListenerAboutIterationDone();
-                System.out.println("Low2 doing 2nd part of job");
+                logger.info("LOW2 BASE task doing 2nd part of job");
                 doSleep(1000);
-                System.out.println("Low2 DONE");
+                logger.info("LOW2 BASE task DONE");
             }
         };
         queue.add(task3);
@@ -60,12 +63,12 @@ public class SubmitterThread extends Thread {
         Task task4 = new ATask(Priority.HIGH, TypeTask.BASE) {
             @Override
             public void run() {
-                System.out.println("HIGH doing 1st part of job");
+                logger.info("HIGH BASE task doing 1st part of job");
                 doSleep(3000);
                 notifyListenerAboutIterationDone();
-                System.out.println("HIGH doing 2nd part of job");
+                logger.info("HIGH BASE task doing 2nd part of job");
                 doSleep(3000);
-                System.out.println("HIGH DONE");
+                logger.info("HIGH BASE task DONE");
             }
         };
         queue.add(task4);

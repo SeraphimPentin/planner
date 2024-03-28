@@ -1,5 +1,7 @@
 package polytech.components;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import polytech.domain.Task;
 
 import java.util.concurrent.BlockingQueue;
@@ -9,6 +11,8 @@ public class GetterThread extends Thread {
     private final BlockingQueue<Task> queue;
     private final Planner planner;
     //private volatile boolean stop = true;
+    private static final Logger logger = LoggerFactory.getLogger(GetterThread.class);
+
 
     public GetterThread(BlockingQueue<Task> queue, Planner planner) {
         super("GetterThread");
@@ -22,7 +26,7 @@ public class GetterThread extends Thread {
             Task task;
             try {
                 task = queue.take();
-                System.out.println("Get task " + task.priority());
+                logger.info("Get task " + task.priority() + " " + task.type());
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
