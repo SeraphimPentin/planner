@@ -1,7 +1,8 @@
 package polytech.enums;
 
-public enum BaseStates {
+public enum TaskState {
     RUNNING,
     READY,
+    WAITING,
     SUSPENDED
 }

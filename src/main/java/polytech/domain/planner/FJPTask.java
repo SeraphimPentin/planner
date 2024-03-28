@@ -1,7 +1,7 @@
 package polytech.domain.planner;
 
 import polytech.domain.Task;
-import polytech.enums.BaseStates;
+import polytech.enums.TaskState;
 
 import java.util.Queue;
 import java.util.concurrent.RecursiveAction;
@@ -10,7 +10,7 @@ public class FJPTask extends RecursiveAction {
     private final Queue<FJPTask> highPriorityTasks;
     private final Task task;
 
-    private volatile BaseStates state = BaseStates.SUSPENDED;
+    protected volatile TaskState state = TaskState.SUSPENDED;
 
     public FJPTask(Task task, Queue<FJPTask> highPriorityTasks) {
         this.task = task;
@@ -21,21 +21,20 @@ public class FJPTask extends RecursiveAction {
     @Override
     protected void compute() {
         preemptIfNeeded(); //Перед выполнением подождать более приоритетные
-        state = BaseStates.READY;
+        state = TaskState.READY;
         task.run();
-        state = BaseStates.SUSPENDED;
+        state = TaskState.SUSPENDED;
     }
 
     protected void preemptIfNeeded() {
         if (highPriorityTasks == null) {
             return;
         }
-        state = BaseStates.READY;
+        state = TaskState.READY;
         for (FJPTask task : highPriorityTasks) {
             //TODO check for done and remove task
             task.join();
         }
-        state = BaseStates.RUNNING;
+        state = TaskState.RUNNING;
     }
-
 }
