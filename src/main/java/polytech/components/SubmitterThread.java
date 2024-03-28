@@ -1,5 +1,6 @@
 package polytech.components;
 
+import polytech.domain.ATask;
 import polytech.domain.Task;
 import polytech.enums.Priority;
 import polytech.enums.TypeTask;
@@ -17,12 +18,12 @@ public class SubmitterThread extends Thread {
 
     @Override
     public void run() {
-        Task task1 = new Task(TypeTask.BASE, Priority.LOW) {
+        Task task1 = new ATask(Priority.LOW, TypeTask.BASE) {
             @Override
-            public void doWork() {
+            public void run() {
                 System.out.println("Low doing 1st part of job");
                 doSleep(1000);
-                preemptIfNeeded();
+                notifyListenerAboutIterationDone();
                 System.out.println("Low doing 2nd part of job");
                 doSleep(1000);
                 System.out.println("Low DONE");
@@ -30,12 +31,12 @@ public class SubmitterThread extends Thread {
         };
         queue.add(task1);
 
-        Task task2 = new Task(TypeTask.BASE, Priority.MIDDLE) {
+        Task task2 = new ATask(Priority.MIDDLE, TypeTask.BASE) {
             @Override
-            public void doWork() {
+            public void run() {
                 System.out.println("Middle doing 1st part of job");
                 doSleep(2000);
-                preemptIfNeeded();
+                notifyListenerAboutIterationDone();
                 System.out.println("Middle doing 2nd part of job");
                 doSleep(2000);
                 System.out.println("Middle DONE");
@@ -43,12 +44,12 @@ public class SubmitterThread extends Thread {
         };
         queue.add(task2);
 
-        Task task3 = new Task(TypeTask.BASE, Priority.LOW) {
+        Task task3 = new ATask(Priority.LOW, TypeTask.BASE) {
             @Override
-            public void doWork() {
+            public void run() {
                 System.out.println("Low2 doing 1st part of job");
                 doSleep(1000);
-                preemptIfNeeded();
+                notifyListenerAboutIterationDone();
                 System.out.println("Low2 doing 2nd part of job");
                 doSleep(1000);
                 System.out.println("Low2 DONE");
@@ -56,12 +57,12 @@ public class SubmitterThread extends Thread {
         };
         queue.add(task3);
 
-        Task task4 = new Task(TypeTask.BASE, Priority.HIGH) {
+        Task task4 = new ATask(Priority.HIGH, TypeTask.BASE) {
             @Override
-            public void doWork() {
+            public void run() {
                 System.out.println("HIGH doing 1st part of job");
                 doSleep(3000);
-                preemptIfNeeded();
+                notifyListenerAboutIterationDone();
                 System.out.println("HIGH doing 2nd part of job");
                 doSleep(3000);
                 System.out.println("HIGH DONE");

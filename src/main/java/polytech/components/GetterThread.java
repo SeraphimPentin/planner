@@ -19,7 +19,7 @@ public class GetterThread extends Thread {
     @Override
     public void run() {
         while (true) {
-            Task task = null;
+            Task task;
             try {
                 task = queue.take();
                 System.out.println("Get task " + task.priority());
