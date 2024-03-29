@@ -1,16 +1,19 @@
 package polytech.domain;
 
 import polytech.enums.Priority;
-import polytech.enums.TypeTask;
 
-public abstract class ATask implements Task {
+public abstract class ATask implements ExtendedTask {
     private volatile TaskListener listener;
+    private volatile EventListener eventListener;
     private final Priority priority;
-    private final TypeTask type;
 
-    protected ATask(Priority priority, TypeTask type) {
+    protected ATask(Priority priority) {
         this.priority = priority;
-        this.type = type;
+    }
+
+    @Override
+    public void setEventListener(EventListener eventListener) {
+        this.eventListener = eventListener;
     }
 
     protected void notifyListenerAboutIterationDone() {
@@ -19,14 +22,15 @@ public abstract class ATask implements Task {
         }
     }
 
-    @Override
-    public Priority priority() {
-        return priority;
+    protected void fireEvent(Runnable event) {
+        if (eventListener != null) {
+            eventListener.eventFired(event);
+        }
     }
 
     @Override
-    public TypeTask type() {
-        return type;
+    public Priority priority() {
+        return priority;
     }
 
     @Override

@@ -3,7 +3,6 @@ package polytech.components;
 import polytech.domain.ATask;
 import polytech.domain.Task;
 import polytech.enums.Priority;
-import polytech.enums.TypeTask;
 
 import java.util.concurrent.BlockingQueue;
 
@@ -18,7 +17,7 @@ public class SubmitterThread extends Thread {
 
     @Override
     public void run() {
-        Task task1 = new ATask(Priority.LOW, TypeTask.BASE) {
+        Task task1 = new ATask(Priority.LOW) {
             @Override
             public void run() {
                 System.out.println("Low doing 1st part of job");
@@ -31,7 +30,7 @@ public class SubmitterThread extends Thread {
         };
         queue.add(task1);
 
-        Task task2 = new ATask(Priority.MIDDLE, TypeTask.BASE) {
+        Task task2 = new ATask(Priority.MIDDLE) {
             @Override
             public void run() {
                 System.out.println("Middle doing 1st part of job");
@@ -44,7 +43,7 @@ public class SubmitterThread extends Thread {
         };
         queue.add(task2);
 
-        Task task3 = new ATask(Priority.LOW, TypeTask.BASE) {
+        Task task3 = new ATask(Priority.LOW) {
             @Override
             public void run() {
                 System.out.println("Low2 doing 1st part of job");
@@ -57,12 +56,20 @@ public class SubmitterThread extends Thread {
         };
         queue.add(task3);
 
-        Task task4 = new ATask(Priority.HIGH, TypeTask.BASE) {
+        Task task4 = new ATask(Priority.HIGH) {
             @Override
             public void run() {
                 System.out.println("HIGH doing 1st part of job");
                 doSleep(3000);
                 notifyListenerAboutIterationDone();
+                fireEvent(new Runnable() {
+                    @Override
+                    public void run() {
+                        System.out.println("Event is being done");
+                        doSleep(5000);
+                        System.out.println("Event is done");
+                    }
+                });
                 System.out.println("HIGH doing 2nd part of job");
                 doSleep(3000);
                 System.out.println("HIGH DONE");
