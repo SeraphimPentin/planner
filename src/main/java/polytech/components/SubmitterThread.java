@@ -5,6 +5,7 @@ import polytech.domain.TaskImpl;
 import polytech.domain.Task;
 import polytech.enums.Priority;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
@@ -19,7 +20,7 @@ public class SubmitterThread extends Thread {
 
     @Override
     public void run() {
-        Task task1 = new TaskImpl(Priority.LOW, List.of(
+        Task task1 = new TaskImpl(Priority.LOW, listOf(
                 () -> {
                     System.out.println("Low doing 1st part of job");
                     doSleep(1000);
@@ -33,7 +34,7 @@ public class SubmitterThread extends Thread {
 
         queue.add(task1);
 
-        Task task2 = new TaskImpl(Priority.MIDDLE, List.of(
+        Task task2 = new TaskImpl(Priority.MIDDLE, listOf(
                 () -> {
                     System.out.println("Middle doing 1st part of job");
                     doSleep(2000);
@@ -46,7 +47,7 @@ public class SubmitterThread extends Thread {
         ));
         queue.add(task2);
 
-        Task task3 = new TaskImpl(Priority.LOW, List.of(
+        Task task3 = new TaskImpl(Priority.LOW, listOf(
                 () -> {
                     System.out.println("Low2 doing 1st part of job");
                     doSleep(1000);
@@ -59,10 +60,11 @@ public class SubmitterThread extends Thread {
         ));
         queue.add(task3);
 
-        Task task4 = new TaskImpl(Priority.HIGH, List.of(
+        Task task4 = new TaskImpl(Priority.HIGH, listOf(
                 () -> {
                     System.out.println("HIGH doing 1st part of job");
                     doSleep(3000);
+                    System.out.println("HIGH done 1st part of job");
                 },
                 new Event() {
                     @Override
@@ -81,6 +83,14 @@ public class SubmitterThread extends Thread {
 
         queue.add(task4);
 
+    }
+
+    private static List<Runnable> listOf(Runnable... iterations) {
+        List<Runnable> list = new LinkedList<>();
+        for (Runnable iteration : iterations) {
+            list.add(iteration);
+        }
+        return list;
     }
 
     private static void doSleep(long millis) {
