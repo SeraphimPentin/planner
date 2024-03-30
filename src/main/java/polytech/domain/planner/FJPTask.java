@@ -1,8 +1,10 @@
 package polytech.domain.planner;
 
+import polytech.domain.Event;
 import polytech.domain.Task;
 import polytech.enums.TaskState;
 
+import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.RecursiveAction;
 
@@ -15,15 +17,27 @@ public class FJPTask extends RecursiveAction {
     public FJPTask(Task task, Queue<FJPTask> highPriorityTasks) {
         this.task = task;
         this.highPriorityTasks = highPriorityTasks;
-        task.setListener(this::preemptIfNeeded);
     }
 
     @Override
     protected void compute() {
         preemptIfNeeded(); //Перед выполнением подождать более приоритетные
         state = TaskState.READY;
-        task.run();
+        runTask();
         state = TaskState.SUSPENDED;
+    }
+
+    protected void runTask() {
+        Iterable<Runnable> iterations = task.iterations();
+        for (Iterator<Runnable> i = iterations.iterator(); i.hasNext(); ) {
+            Runnable iteration = i.next();
+            if (iteration instanceof Event) {
+                //return; //Make task computed
+            }
+            iteration.run();
+            i.remove();
+            preemptIfNeeded();
+        }
     }
 
     protected void preemptIfNeeded() {
