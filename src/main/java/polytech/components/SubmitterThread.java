@@ -70,7 +70,7 @@ public class SubmitterThread extends Thread {
                     @Override
                     public void run() {
                         System.out.println("Event is being done");
-                        doSleep(5000);
+                        doSleep(100);
                         System.out.println("Event is done");
                     }
                 },
