@@ -1,18 +1,20 @@
 package polytech.domain;
 
 import polytech.enums.Priority;
-import polytech.enums.TypeTask;
+import polytech.enums.TaskState;
 
 /**
  * Задача в нашей доменной модели:
- * - Имеет тип
  * - Имеет приоритет
+ * - Может получать и устанваливать статус задачи
  * - Обязана иметь пошаговую логику выполнения (extends IterativeTask)
  */
 public interface Task extends IterativeTask {
 
     Priority priority();
 
-    TypeTask type();
+    TaskState getState();
+
+    void setState(TaskState oldState, TaskState newState);
 
 }
