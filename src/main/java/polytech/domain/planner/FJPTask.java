@@ -5,23 +5,27 @@ import polytech.domain.Task;
 import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.RecursiveAction;
+import java.util.concurrent.Semaphore;
 import java.util.function.Consumer;
 
 public class FJPTask extends RecursiveAction implements TaskActable {
     private final Task task;
     private final Queue<FJPTask> highPriorityTasks;
+    private final Semaphore readyTasksSemaphore;
     private final Consumer<Task> eventConsumer;
 
 
-    public FJPTask(Task task, Queue<FJPTask> highPriorityTasks, Consumer<Task> eventConsumer) {
+    public FJPTask(Task task, Queue<FJPTask> highPriorityTasks, Semaphore readyTasksSemaphore, Consumer<Task> eventConsumer) {
         this.task = task;
         this.highPriorityTasks = highPriorityTasks;
+        this.readyTasksSemaphore = readyTasksSemaphore;
         this.eventConsumer = eventConsumer;
     }
 
     @Override
     protected void compute() {
         preemptIfNeeded(); //Перед выполнением подождать более приоритетные
+        activate(task);
         runTask();
     }
 
@@ -39,6 +43,11 @@ public class FJPTask extends RecursiveAction implements TaskActable {
             iteration.run();
             preemptIfNeeded();
         }
+    }
+
+    private void startTask() {
+        readyTasksSemaphore.release(); //transition from READY state
+        start(task);
     }
 
     protected void preemptIfNeeded() {
