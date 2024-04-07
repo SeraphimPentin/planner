@@ -11,16 +11,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Queue;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.Semaphore;
+import java.util.concurrent.*;
 
 public class Planner implements TaskActable {
-    public static final int READY_TASKS_LIMIT = 10;
-
     private final ForkJoinPool forkJoinPool = new ForkJoinPool(1);
     private final ExecutorService eventPool = Executors.newSingleThreadExecutor();
     private final Semaphore readyTasksSemaphore = new Semaphore(READY_TASKS_LIMIT);

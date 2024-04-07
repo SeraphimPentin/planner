@@ -11,38 +11,36 @@ public interface TaskActable{
     Logger logger = LoggerFactory.getLogger(TaskActable.class);
 
     default void activate(Task task) {
-        checkDuplicatesAndLogging(task.priority(), task.getState(), TaskState.READY);
-        task.setState(TaskState.READY);
+        transit(task, TaskState.READY);
     }
 
     default void start(Task task) {
-        checkDuplicatesAndLogging(task.priority(), task.getState(), TaskState.RUNNING);
-        task.setState(TaskState.RUNNING);
+        transit(task, TaskState.RUNNING);
     }
 
     default void wait(Task task) {
-        checkDuplicatesAndLogging(task.priority(), task.getState(), TaskState.WAITING);
-        task.setState(TaskState.WAITING);
+        transit(task, TaskState.WAITING);
     }
 
     default void terminate(Task task) {
-        checkDuplicatesAndLogging(task.priority(), task.getState(), TaskState.SUSPENDED);
-        task.setState(TaskState.SUSPENDED);
+        transit(task, TaskState.SUSPENDED);
     }
 
     default void release(Task task) {
-        checkDuplicatesAndLogging(task.priority(), task.getState(), TaskState.READY);
-        task.setState(TaskState.READY);
+        transit(task, TaskState.READY);
     }
 
     default void preempt(Task task) {
-        checkDuplicatesAndLogging(task.priority(), task.getState(), TaskState.READY);
-        task.setState(TaskState.READY);
+        transit(task, TaskState.READY);
     }
 
-    private void checkDuplicatesAndLogging(Priority priority, TaskState oldState, TaskState newState) {
+    private void transit(Task task, TaskState ready) {
+        logging(task.priority(), task.getState(), ready);
+        task.setState(ready);
+    }
+    private void logging(Priority priority, TaskState oldState, TaskState newState) {
         if (oldState == newState) {
-            logger.info(String.format("Task with %s priority in state: %s ", priority, newState));
+            logger.error(String.format("Task with %s priority in state: %s ", priority, newState));
         } else {
             logger.info(String.format("Task with %s priority in state: %s -> %s ", priority, oldState, newState));
         }

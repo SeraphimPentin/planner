@@ -30,7 +30,7 @@ public class FJPTask extends RecursiveAction implements TaskActable {
     }
 
     protected void runTask() {
-        startTask();
+        start(task);
         Iterable<Runnable> iterations = task.iterations();
         for (Iterator<Runnable> i = iterations.iterator(); i.hasNext(); ) {
             Runnable iteration = i.next();
