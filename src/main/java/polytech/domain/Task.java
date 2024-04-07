@@ -15,6 +15,6 @@ public interface Task extends IterativeTask {
 
     TaskState getState();
 
-    void setState(TaskState oldState, TaskState newState);
+    void setState(TaskState state);
 
 }

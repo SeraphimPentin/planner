@@ -4,8 +4,9 @@ package polytech.components;
 import polytech.domain.Event;
 import polytech.domain.planner.FJPTask;
 import polytech.domain.Task;
-import polytech.domain.planner.TaskAction;
+import polytech.domain.planner.TaskActable;
 import polytech.enums.Priority;
+import polytech.enums.TaskState;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -17,7 +18,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
 
-public class Planner implements TaskAction {
+public class Planner implements TaskActable {
     private final ForkJoinPool forkJoinPool = new ForkJoinPool(1);
     private final ExecutorService eventPool = Executors.newSingleThreadExecutor();
 
@@ -31,7 +32,8 @@ public class Planner implements TaskAction {
     }
 
     public void addTask(Task task) {
-        activate(task);
+        task.setState(TaskState.SUSPENDED);
+        activate(task); // fixme Нужно првоерить есть ли место у планировщика. тк имеет ограничение на кол. завдач в соостоянии ready
         int priority = task.priority().getValue();
 
         Queue<FJPTask> highPrioritized = suspendedTasks.get(priority + 1);

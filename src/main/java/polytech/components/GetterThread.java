@@ -1,9 +1,6 @@
 package polytech.components;
 
 import polytech.domain.Task;
-import polytech.domain.planner.TaskAction;
-import polytech.enums.TaskState;
-
 import java.util.concurrent.BlockingQueue;
 
 public class GetterThread extends Thread {
@@ -24,7 +21,6 @@ public class GetterThread extends Thread {
             Task task;
             try {
                 task = queue.take();
-                task.setState(TaskState.SUSPENDED, TaskState.SUSPENDED);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
