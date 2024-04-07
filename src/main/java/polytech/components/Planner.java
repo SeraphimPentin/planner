@@ -32,7 +32,6 @@ public class Planner implements TaskActable {
     }
 
     public void addTask(Task task) {
-        task.setState(TaskState.SUSPENDED);
         activate(task); // fixme Нужно првоерить есть ли место у планировщика. тк имеет ограничение на кол. завдач в соостоянии ready
         int priority = task.priority().getValue();
 

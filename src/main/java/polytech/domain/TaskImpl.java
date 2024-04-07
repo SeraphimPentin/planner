@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class TaskImpl implements Task {
-    private volatile TaskState state;
+    private volatile TaskState state = TaskState.SUSPENDED;
     private final Priority priority;
     private final Iterable<Runnable> iterations;
     private final List<TaskState> listStates = Collections.synchronizedList(new ArrayList<>());
