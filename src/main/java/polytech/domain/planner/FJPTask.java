@@ -27,7 +27,6 @@ public class FJPTask extends RecursiveAction implements TaskActable {
         preemptIfNeeded(); //Перед выполнением подождать более приоритетные
         activate(task);
         runTask();
-        terminate();
     }
 
     protected void runTask() {
