@@ -2,11 +2,10 @@ package polytech.components;
 
 
 import polytech.domain.Event;
-import polytech.domain.planner.FJPTask;
 import polytech.domain.Task;
+import polytech.domain.planner.FJPTask;
 import polytech.domain.planner.TaskActable;
 import polytech.enums.Priority;
-import polytech.enums.TaskState;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -17,10 +16,14 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.Semaphore;
 
 public class Planner implements TaskActable {
+    public static final int READY_TASKS_LIMIT = 10;
+
     private final ForkJoinPool forkJoinPool = new ForkJoinPool(1);
     private final ExecutorService eventPool = Executors.newSingleThreadExecutor();
+    private final Semaphore readyTasksSemaphore = new Semaphore(READY_TASKS_LIMIT);
 
     private final Map<Integer, Queue<FJPTask>> suspendedTasks = new HashMap<>();
 
@@ -32,16 +35,25 @@ public class Planner implements TaskActable {
     }
 
     public void addTask(Task task) {
-        task.setState(TaskState.SUSPENDED);
-        activate(task); // fixme Нужно првоерить есть ли место у планировщика. тк имеет ограничение на кол. завдач в соостоянии ready
+        activateIfCan(task);
+
         int priority = task.priority().getValue();
 
         Queue<FJPTask> highPrioritized = suspendedTasks.get(priority + 1);
         Queue<FJPTask> lowPrioritized = suspendedTasks.get(priority);
 
-        FJPTask fjpTask = new FJPTask(task, highPrioritized, this::handleEventTask);
+        FJPTask fjpTask = new FJPTask(task, highPrioritized, readyTasksSemaphore, this::handleEventTask);
         lowPrioritized.add(fjpTask);
         forkJoinPool.submit(fjpTask);
+    }
+
+    private void activateIfCan(Task task) {
+        try {
+            readyTasksSemaphore.acquire();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        activate(task);
     }
 
     //FIXME Достаточно стрёмный контракт получается. Этот метод, знает что первая итерация у таски - это ивент
