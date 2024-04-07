@@ -1,7 +1,6 @@
 package polytech.components;
 
 import polytech.domain.Task;
-
 import java.util.concurrent.BlockingQueue;
 
 public class GetterThread extends Thread {
@@ -22,7 +21,6 @@ public class GetterThread extends Thread {
             Task task;
             try {
                 task = queue.take();
-                System.out.println("Get task " + task.priority());
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }

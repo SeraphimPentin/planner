@@ -2,19 +2,16 @@ package polytech.domain.planner;
 
 import polytech.domain.Event;
 import polytech.domain.Task;
-import polytech.enums.TaskState;
-
 import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.RecursiveAction;
 import java.util.function.Consumer;
 
-public class FJPTask extends RecursiveAction {
+public class FJPTask extends RecursiveAction implements TaskActable {
     private final Task task;
     private final Queue<FJPTask> highPriorityTasks;
     private final Consumer<Task> eventConsumer;
 
-    protected volatile TaskState state = TaskState.SUSPENDED;
 
     public FJPTask(Task task, Queue<FJPTask> highPriorityTasks, Consumer<Task> eventConsumer) {
         this.task = task;
@@ -25,16 +22,16 @@ public class FJPTask extends RecursiveAction {
     @Override
     protected void compute() {
         preemptIfNeeded(); //Перед выполнением подождать более приоритетные
-        state = TaskState.READY;
         runTask();
-        state = TaskState.SUSPENDED;
     }
 
     protected void runTask() {
+        start(task);
         Iterable<Runnable> iterations = task.iterations();
         for (Iterator<Runnable> i = iterations.iterator(); i.hasNext(); ) {
             Runnable iteration = i.next();
             if (iteration instanceof Event) {
+                wait(task);
                 eventConsumer.accept(task);
                 return; //Make task computed. Release tasks joined on this one
             }
@@ -48,11 +45,14 @@ public class FJPTask extends RecursiveAction {
         if (highPriorityTasks == null) {
             return;
         }
-        state = TaskState.READY;
-        for (FJPTask task : highPriorityTasks) {
-            //TODO check for done and remove task
-            task.join();
+        for (Iterator<FJPTask> iterator = highPriorityTasks.iterator(); iterator.hasNext(); ) {
+            FJPTask task = iterator.next();
+            if (!task.isDone()) {
+                preempt(this.task);
+                task.join();
+            } else {
+                iterator.remove();
+            }
         }
-        state = TaskState.RUNNING;
     }
 }

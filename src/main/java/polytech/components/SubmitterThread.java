@@ -1,5 +1,7 @@
 package polytech.components;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import polytech.domain.Event;
 import polytech.domain.TaskImpl;
 import polytech.domain.Task;
@@ -12,6 +14,7 @@ import java.util.concurrent.BlockingQueue;
 public class SubmitterThread extends Thread {
     private final BlockingQueue<Task> queue;
     private volatile boolean stop;
+    private static final Logger logger = LoggerFactory.getLogger(SubmitterThread.class);
 
     public SubmitterThread(BlockingQueue<Task> queue) {
         super("SubmitterThread");
@@ -22,13 +25,12 @@ public class SubmitterThread extends Thread {
     public void run() {
         Task task1 = new TaskImpl(Priority.LOW, listOf(
                 () -> {
-                    System.out.println("Low doing 1st part of job");
-                    doSleep(1000);
+                    doWork(100_000);
                 },
                 () -> {
-                    System.out.println("Low doing 2nd part of job");
-                    doSleep(1000);
-                    System.out.println("Low DONE");
+                    doWork(100_000);
+                    logger.info("LOW1 DONE");
+
                 }
         ));
 
@@ -36,54 +38,77 @@ public class SubmitterThread extends Thread {
 
         Task task2 = new TaskImpl(Priority.MIDDLE, listOf(
                 () -> {
-                    System.out.println("Middle doing 1st part of job");
-                    doSleep(2000);
+                    doWork(1_000_000);
                 },
                 () -> {
-                    System.out.println("Middle doing 2nd part of job");
-                    doSleep(2000);
-                    System.out.println("Middle DONE");
+                    doWork(1_000_000);
+                    logger.info("MIDDLE1 DONE");
+
                 }
         ));
         queue.add(task2);
 
         Task task3 = new TaskImpl(Priority.LOW, listOf(
                 () -> {
-                    System.out.println("Low2 doing 1st part of job");
-                    doSleep(1000);
+                    doWork(500_000);
                 },
                 () -> {
-                    System.out.println("Low2 doing 2nd part of job");
-                    doSleep(1000);
-                    System.out.println("Low2 DONE");
+                    doWork(500_000);
+                    logger.info("LOW2 DONE");
                 }
         ));
         queue.add(task3);
 
         Task task4 = new TaskImpl(Priority.HIGH, listOf(
                 () -> {
-                    System.out.println("HIGH doing 1st part of job");
-                    doSleep(3000);
-                    System.out.println("HIGH done 1st part of job");
+                    doWork(3_000_000);
                 },
                 new Event() {
                     @Override
                     public void run() {
-                        System.out.println("Event is being done");
-                        doSleep(100);
-                        System.out.println("Event is done");
+                        doWork(3_000_000);
                     }
                 },
                 () -> {
-                    System.out.println("HIGH doing 2nd part of job");
-                    doSleep(3000);
-                    System.out.println("HIGH DONE");
+                    doWork(3_000_000);
+                    logger.info("HIGH DONE");
+
                 }
         ));
 
         queue.add(task4);
 
+        Task task5 = new TaskImpl(Priority.LOWEST, listOf(
+                () -> {
+                    doWork(100_000);
+                },
+                () -> {
+                    doWork(100_000);
+                    logger.info("LOWEST DONE");
+                }
+        ));
+        queue.add(task5);
+
+        Task task6 = new TaskImpl(Priority.MIDDLE, listOf(
+                () -> {
+                    doWork(1_000_000);
+                },
+                new Event() {
+                    @Override
+                    public void run() {
+                        doWork(1_000_000);
+                    }
+                },
+                () -> {
+                    doWork(1_000_000);
+                    logger.info("MIDDLE2 DONE");
+                }
+        ));
+
+        queue.add(task6);
     }
+
+
 
     private static List<Runnable> listOf(Runnable... iterations) {
         List<Runnable> list = new LinkedList<>();
@@ -93,13 +118,10 @@ public class SubmitterThread extends Thread {
         return list;
     }
 
-    private static void doSleep(long millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+    private static void doWork(int count) {
+        int sum = 0;
+        for (int i = 0; i < count; i++) {
+            sum += i;
         }
     }
-
-
 }
