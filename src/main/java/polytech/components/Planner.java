@@ -83,7 +83,7 @@ public class Planner extends Thread implements TaskActable {
         Event event = (Event) iterator.next();
         iterator.remove();
         CompletableFuture.runAsync(event, eventPool).thenRun(() -> {
-            release(task);
+            //release(task);
             this.scheduleTaskExecution(task);
         });
     }
