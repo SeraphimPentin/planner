@@ -48,14 +48,14 @@ public class ExecutionSuspensionTest extends PlannerTestBase {
         lowIsRunning.await();
         queue.add(high);
 
-        Assertions.assertEquals(TaskState.RUNNING, low.getState());
-        Assertions.assertTrue(TaskState.READY == high.getState() || TaskState.SUSPENDED == high.getState());
+        Assertions.assertSame(TaskState.RUNNING, low.getState());
+        Assertions.assertSame(TaskState.READY, high.getState());
         check1.signal();
 
 
         highIsRunning.await();
-        Assertions.assertEquals(TaskState.RUNNING, high.getState());
-        Assertions.assertEquals(TaskState.SUSPENDED, low.getState());
+        Assertions.assertSame(TaskState.RUNNING, high.getState());
+        Assertions.assertSame(TaskState.SUSPENDED, low.getState());
         check2.signal();
 
     }
