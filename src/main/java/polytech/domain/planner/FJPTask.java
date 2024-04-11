@@ -31,14 +31,14 @@ public class FJPTask extends RecursiveAction implements TaskActable {
     protected void runTask() {
         startTask();
         Iterable<Runnable> iterations = task.iterations();
-        for (Iterator<Runnable> i = iterations.iterator(); i.hasNext(); ) {
-            Runnable iteration = i.next();
+        for (Iterator<Runnable> iterator = iterations.iterator(); iterator.hasNext(); ) {
+            Runnable iteration = iterator.next();
             if (iteration instanceof Event) {
                 wait(task);
                 eventConsumer.accept(task);
                 return; //Make task computed. Release tasks joined on this one
             }
-            i.remove();
+            iterator.remove();
             iteration.run();
             preemptIfNeeded();
         }

@@ -1,6 +1,7 @@
 package polytech.components;
 
 
+import polytech.Properties;
 import polytech.domain.Event;
 import polytech.domain.Task;
 import polytech.domain.planner.FJPTask;
@@ -19,11 +20,15 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Semaphore;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class Planner extends Thread implements TaskActable {
-    private static final int READY_TASKS_LIMIT = 3;
+
+    private static final Logger log = LoggerFactory.getLogger(Planner.class);
 
     private final BlockingQueue<Task> taskQueue;
-    private final Semaphore readyTasksSemaphore = new Semaphore(READY_TASKS_LIMIT);
+    private final Semaphore readyTasksSemaphore = new Semaphore(Properties.READY_TASKS_LIMIT);
 
     private final ForkJoinPool forkJoinPool = new ForkJoinPool(1);
     private final ExecutorService eventPool = Executors.newSingleThreadExecutor();
@@ -55,7 +60,7 @@ public class Planner extends Thread implements TaskActable {
     }
 
     private void scheduleTaskExecution(Task task) {
-        activateIfCan(task);
+        activateIfReadyTasksAmountAllows(task);
 
         int priority = task.priority().getValue();
 
@@ -65,15 +70,6 @@ public class Planner extends Thread implements TaskActable {
         FJPTask fjpTask = new FJPTask(task, highPrioritized, readyTasksSemaphore, this::handleEventTask);
         lowPrioritized.add(fjpTask);
         forkJoinPool.submit(fjpTask);
-    }
-
-    private void activateIfCan(Task task) {
-        try {
-            readyTasksSemaphore.acquire();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        activate(task);
     }
 
     //FIXME Достаточно стрёмный контракт получается. Этот метод, знает что первая итерация у таски - это ивент
@@ -86,5 +82,23 @@ public class Planner extends Thread implements TaskActable {
             this.scheduleTaskExecution(task);
         });
     }
+
+    private void activateIfReadyTasksAmountAllows(Task task) {
+        log.info(String.format(
+                "Activating task %s %s. Ready tasks count: %d/%d",
+                task.priority(), task.uuid(), countReadyTasks(), Properties.READY_TASKS_LIMIT
+        ));
+        try {
+            readyTasksSemaphore.acquire();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        activate(task);
+    }
+
+    private int countReadyTasks() {
+        return Properties.READY_TASKS_LIMIT - readyTasksSemaphore.availablePermits();
+    }
+
 }
 

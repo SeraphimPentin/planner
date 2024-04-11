@@ -35,14 +35,21 @@ public interface TaskActable{
     }
 
     private void transit(Task task, TaskState ready) {
-        logging(task.priority(), task.getState(), ready);
+        logging(task, task.getState(), ready);
         task.setState(ready);
     }
-    private void logging(Priority priority, TaskState oldState, TaskState newState) {
+
+    private void logging(Task task, TaskState oldState, TaskState newState) {
         if (oldState == newState) {
-            logger.error(String.format("Task with %s priority in state: %s ", priority, newState));
+            logger.warn(String.format(
+                    "Task %s %s stays in state: %s ",
+                    task.priority(), task.uuid(), oldState
+            ));
         } else {
-            logger.info(String.format("Task with %s priority in state: %s -> %s ", priority, oldState, newState));
+            logger.info(String.format(
+                    "Task %s %s transition: %s -> %s ",
+                    task.priority(), task.uuid(), oldState, newState
+            ));
         }
     }
 }
