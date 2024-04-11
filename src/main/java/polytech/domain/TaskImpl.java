@@ -7,15 +7,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.Collection;
 
 public class TaskImpl implements Task {
     private volatile TaskState state = TaskState.SUSPENDED;
     private final Priority priority;
-    private final Iterable<Runnable> iterations;
+    private final Collection<Runnable> iterations;
     private final List<TaskState> listStates = Collections.synchronizedList(new ArrayList<>());
     private final UUID uuid;
 
-    public TaskImpl(Priority priority, Iterable<Runnable> iterations) {
+    public TaskImpl(Priority priority, Collection<Runnable> iterations) {
         this.priority = priority;
         this.iterations = iterations;
         this.uuid = UUID.randomUUID();
@@ -49,5 +50,13 @@ public class TaskImpl implements Task {
     @Override
     public Iterable<Runnable> iterations() {
         return iterations;
+    }
+    @Override
+    public String toString() {
+        return "TaskImpl{" +
+                "priority=" + priority +
+                ", iterations_size=" + iterations.size() +
+                ", uuid=" + uuid +
+                '}';
     }
 }
