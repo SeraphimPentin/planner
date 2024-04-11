@@ -1,4 +1,4 @@
-package polytech.components;
+package polytech.components.planner;
 
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -11,6 +11,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import polytech.components.Planner;
 import polytech.domain.Task;
 
 public class PlannerTestBase {

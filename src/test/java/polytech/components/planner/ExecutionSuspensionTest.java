@@ -1,4 +1,4 @@
-package polytech.components;
+package polytech.components.planner;
 
 import java.util.concurrent.BlockingQueue;
 
