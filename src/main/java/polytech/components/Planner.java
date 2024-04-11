@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
@@ -18,12 +19,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Semaphore;
 
-public class Planner implements TaskActable {
+public class Planner extends Thread implements TaskActable {
     private static final int READY_TASKS_LIMIT = 3;
+
+    private final BlockingQueue<Task> taskQueue;
+    private final Semaphore readyTasksSemaphore = new Semaphore(READY_TASKS_LIMIT);
 
     private final ForkJoinPool forkJoinPool = new ForkJoinPool(1);
     private final ExecutorService eventPool = Executors.newSingleThreadExecutor();
-    private final Semaphore readyTasksSemaphore = new Semaphore(READY_TASKS_LIMIT);
 
     private final Map<Integer, Queue<FJPTask>> suspendedTasks = new HashMap<>();
 
@@ -34,7 +37,24 @@ public class Planner implements TaskActable {
         suspendedTasks.put(Priority.LOWEST.getValue(), new ConcurrentLinkedQueue<>()); //FIXME remove
     }
 
-    public void addTask(Task task) {
+    public Planner(BlockingQueue<Task> taskQueue) {
+        this.taskQueue = taskQueue;
+    }
+
+    @Override
+    public void run() {
+        while (true) {
+            Task task;
+            try {
+                task = taskQueue.take();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            scheduleTaskExecution(task);
+        }
+    }
+
+    private void scheduleTaskExecution(Task task) {
         activateIfCan(task);
 
         int priority = task.priority().getValue();
@@ -63,7 +83,7 @@ public class Planner implements TaskActable {
         iterator.remove();
         CompletableFuture.runAsync(event, eventPool).thenRun(() -> {
             release(task);
-            this.addTask(task);
+            this.scheduleTaskExecution(task);
         });
     }
 }
