@@ -62,16 +62,9 @@ public class EventTest extends PlannerTestBase {
 
         eventIsRunning.await();
         lowIsRunning.await();
-        Assertions.assertTrue(TaskState.WAITING == high.getState() || TaskState.READY == high.getState());
+        Assertions.assertSame(TaskState.WAITING, high.getState());
         Assertions.assertSame(TaskState.RUNNING, low.getState());
         check2.signal();
-
-
-
-
-
-
-
 
 
     }
