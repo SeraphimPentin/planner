@@ -25,7 +25,6 @@ public class FJPTask extends RecursiveAction implements TaskActable {
     @Override
     protected void compute() {
         preemptIfNeeded(); //Перед выполнением подождать более приоритетные
-        activate(task);
         runTask();
     }
 
@@ -64,5 +63,6 @@ public class FJPTask extends RecursiveAction implements TaskActable {
                 iterator.remove();
             }
         }
+        start(task);
     }
 }
