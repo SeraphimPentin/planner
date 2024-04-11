@@ -1,6 +1,8 @@
 package polytech.components;
 
 import polytech.domain.Task;
+import polytech.domain.TaskImpl;
+
 import java.util.concurrent.BlockingQueue;
 
 public class SubmitterThread extends Thread {
@@ -19,7 +21,8 @@ public class SubmitterThread extends Thread {
     @Override
     public void run() {
         while (true) {
-            queue.add(taskGenerator.createRandomTask());
+            TaskImpl task = taskGenerator.createRandomTask();
+            queue.add(task);
         }
     }
 }
