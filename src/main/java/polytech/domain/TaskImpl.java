@@ -20,6 +20,7 @@ public class TaskImpl implements Task {
         this.priority = priority;
         this.iterations = iterations;
         this.uuid = UUID.randomUUID();
+        listStates.add(state);
     }
 
     public List<TaskState> getListStates() {
