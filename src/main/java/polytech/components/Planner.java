@@ -27,10 +27,9 @@ public class Planner extends Thread implements TaskActable {
 
     private static final Logger log = LoggerFactory.getLogger(Planner.class);
 
+    private final ForkJoinPool forkJoinPool;
     private final BlockingQueue<Task> taskQueue;
     private final Semaphore readyTasksSemaphore = new Semaphore(Properties.READY_TASKS_LIMIT);
-
-    private final ForkJoinPool forkJoinPool = new ForkJoinPool(1);
     private final ExecutorService eventPool = Executors.newSingleThreadExecutor();
 
     private final Map<Integer, Queue<FJPTask>> suspendedTasks = new HashMap<>();
@@ -43,6 +42,12 @@ public class Planner extends Thread implements TaskActable {
     }
 
     public Planner(BlockingQueue<Task> taskQueue) {
+        this.taskQueue = taskQueue;
+        this.forkJoinPool = new ForkJoinPool(1);
+    }
+
+    public Planner(BlockingQueue<Task> taskQueue, ForkJoinPool forkJoinPool) {
+        this.forkJoinPool = forkJoinPool;
         this.taskQueue = taskQueue;
     }
 
