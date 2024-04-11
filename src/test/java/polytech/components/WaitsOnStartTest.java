@@ -11,14 +11,14 @@ import polytech.domain.TaskImpl;
 import polytech.enums.Priority;
 import polytech.enums.TaskState;
 
-public class PlannerTest extends PlannerTestBase{
+public class WaitsOnStartTest extends PlannerTestBase{
 
     @Test
     void lowWaitsHighWhileItsRuns() {
         PriorityBlockingQueue<Task> queue = getTaskQueue();
 
-        ConditionWithLock highIsRunning = ConditionWithLock.createNew();
-        ConditionWithLock checksDone = ConditionWithLock.createNew();
+        TestCondition highIsRunning = TestCondition.create();
+        TestCondition checksDone = TestCondition.create();
 
         Task task1 = new TaskImpl(Priority.LOW, listOf(
                 () -> {
@@ -54,8 +54,8 @@ public class PlannerTest extends PlannerTestBase{
     void multipleLowWaitsHighWhileItsRuns() {
         PriorityBlockingQueue<Task> queue = getTaskQueue();
 
-        ConditionWithLock highIsRunning = ConditionWithLock.createNew();
-        ConditionWithLock checksDone = ConditionWithLock.createNew();
+        TestCondition highIsRunning = TestCondition.create();
+        TestCondition checksDone = TestCondition.create();
 
         List<Task> lows = List.of(
                 new TaskImpl(Priority.LOW, listOf(

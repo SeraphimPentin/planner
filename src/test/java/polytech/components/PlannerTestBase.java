@@ -15,6 +15,10 @@ import polytech.domain.Task;
 
 public class PlannerTestBase {
 
+    protected static final int VERY_SMALL_WORK = 100;
+    protected static final int SMALL_WORK = 100;
+    protected static final int HUGE_WORK = 10000;
+
     protected static BlockingQueue<Task> startPlannerAndGetIsQueue() {
         BlockingQueue<Task> queue = getTaskQueue();
         startPlanner(queue);
@@ -42,18 +46,18 @@ public class PlannerTestBase {
         planner.start();
     }
 
-    protected static class ConditionWithLock {
+    protected static class TestCondition {
         private final Lock lock;
         private final Condition condition;
 
-        protected ConditionWithLock(Lock lock) {
+        protected TestCondition(Lock lock) {
             this.lock = lock;
             this.condition = lock.newCondition();
         }
 
-        public static ConditionWithLock createNew() {
+        public static TestCondition create() {
             Lock lock = new ReentrantLock();
-            return new ConditionWithLock(lock);
+            return new TestCondition(lock);
         }
 
         public void signal() {

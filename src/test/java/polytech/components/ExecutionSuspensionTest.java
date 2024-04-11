@@ -10,19 +10,19 @@ import polytech.domain.TaskImpl;
 import polytech.enums.Priority;
 import polytech.enums.TaskState;
 
-public class PlannerTest2 extends PlannerTestBase {
+public class ExecutionSuspensionTest extends PlannerTestBase {
 
     @Test
-    public void highSuspendsLowExecution() throws InterruptedException {
+    public void highTasksSuspendsLowExecution() throws InterruptedException {
         BlockingQueue<Task> queue = startPlannerAndGetIsQueue();
 
-        ConditionWithLock lowIsRunning = ConditionWithLock.createNew();
-        ConditionWithLock check1 = ConditionWithLock.createNew();
-        ConditionWithLock highIsRunning = ConditionWithLock.createNew();
-        ConditionWithLock check2 = ConditionWithLock.createNew();
+        TestCondition lowIsRunning = TestCondition.create();
+        TestCondition check1 = TestCondition.create();
+        TestCondition highIsRunning = TestCondition.create();
+        TestCondition check2 = TestCondition.create();
 
 
-        TaskImpl low = new TaskImpl(Priority.LOW, listOf(
+        Task low = new TaskImpl(Priority.LOW, listOf(
                 () -> {
                     doWork(100);
                     lowIsRunning.signal();
