@@ -4,7 +4,9 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -14,8 +16,8 @@ import polytech.domain.Task;
 public class PlannerTestBase {
 
     protected static BlockingQueue<Task> startPlannerAndGetIsQueue() {
-        BlockingQueue<Task> queue = PlannerTest.getTaskQueue();
-        PlannerTest.startPlanner(queue);
+        BlockingQueue<Task> queue = getTaskQueue();
+        startPlanner(queue);
         return queue;
     }
 
@@ -24,7 +26,19 @@ public class PlannerTestBase {
     }
 
     protected static void startPlanner(BlockingQueue<Task> queue) {
-        Planner planner = new Planner(queue);
+        ForkJoinPool forkJoinPool = new ForkJoinPool(
+                1,
+                ForkJoinPool.defaultForkJoinWorkerThreadFactory,
+                null,
+                false,
+                1,
+                1,
+                0,
+                forkJoinPool1 -> true,
+                60_000L,
+                TimeUnit.DAYS
+        );
+        Planner planner = new Planner(queue, forkJoinPool);
         planner.start();
     }
 

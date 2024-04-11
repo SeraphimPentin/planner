@@ -1,6 +1,5 @@
 package polytech.components;
 
-import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
 import org.junit.jupiter.api.Assertions;
@@ -46,7 +45,6 @@ public class PlannerTest2 extends PlannerTestBase {
         ));
 
         queue.add(low);
-        Thread.sleep(100);
         lowIsRunning.await();
         queue.add(high);
 
@@ -57,7 +55,7 @@ public class PlannerTest2 extends PlannerTestBase {
 
         highIsRunning.await();
         Assertions.assertEquals(TaskState.RUNNING, high.getState());
-        Assertions.assertEquals(TaskState.READY, low.getState());
+        Assertions.assertEquals(TaskState.SUSPENDED, low.getState());
         check2.signal();
 
     }
