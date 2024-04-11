@@ -25,7 +25,6 @@ public class Util {
                     public void run() {
                         doWork(countToSum);
                     }
-
                 });
             }
             else {
