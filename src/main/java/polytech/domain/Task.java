@@ -17,4 +17,6 @@ public interface Task extends IterativeTask {
 
     void setState(TaskState state);
 
+    String uuid();
+
 }

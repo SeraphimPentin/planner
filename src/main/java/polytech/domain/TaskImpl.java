@@ -6,16 +6,19 @@ import polytech.enums.TaskState;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 public class TaskImpl implements Task {
     private volatile TaskState state = TaskState.SUSPENDED;
     private final Priority priority;
     private final Iterable<Runnable> iterations;
     private final List<TaskState> listStates = Collections.synchronizedList(new ArrayList<>());
+    private final UUID uuid;
 
     public TaskImpl(Priority priority, Iterable<Runnable> iterations) {
         this.priority = priority;
         this.iterations = iterations;
+        this.uuid = UUID.randomUUID();
     }
 
     public List<TaskState> getListStates() {
@@ -36,6 +39,11 @@ public class TaskImpl implements Task {
     public void setState(TaskState state) {
         this.state = state;
         listStates.add(state);
+    }
+
+    @Override
+    public String uuid() {
+        return uuid.toString();
     }
 
     @Override
