@@ -43,6 +43,7 @@ public class FJPTask extends RecursiveAction implements TaskActable {
             iteration.run();
             preemptIfNeeded();
         }
+        terminate(task);
     }
 
     private void startTask() {
