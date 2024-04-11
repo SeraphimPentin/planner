@@ -2,11 +2,12 @@ package polytech.util;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 import polytech.Properties;
 import polytech.domain.Event;
 
-public class Util {
+public class TaskGeneratorUtil {
 
     private static void doWork(int count) {
         int sum = 0;
@@ -14,8 +15,12 @@ public class Util {
             sum += i;
         }
     }
+    private static int workCount(){
+        Random random = new Random();
+        return random.nextInt(1_000_000);
+    }
 
-    public static List<Runnable> listOf(int countIteration, int countToSum) {
+    public static List<Runnable> listOf(int countIteration) {
         List<Runnable> list = new LinkedList<>();
         double probability = Math.random();
         for (int count = 0; count < countIteration; count++) {
@@ -23,7 +28,7 @@ public class Util {
                 list.add(new Runnable() {
                     @Override
                     public void run() {
-                        doWork(countToSum);
+                        doWork(workCount());
                     }
                 });
             }
@@ -32,7 +37,7 @@ public class Util {
                         new Event() {
                             @Override
                             public void run() {
-                                doWork(countToSum);
+                                doWork(workCount());
                             }
                         }
                 );
