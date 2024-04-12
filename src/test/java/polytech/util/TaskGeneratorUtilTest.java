@@ -23,7 +23,7 @@ class TaskGeneratorUtilTest {
         List<Runnable> list = TaskGeneratorUtil.listOf(countIteration);
 
         for (Runnable runnable : list) {
-           Assertions.assertTrue(runnable instanceof Runnable || runnable instanceof Event, "Element is not instance of Runnable or Event");
+           Assertions.assertTrue(runnable instanceof Runnable, "Element is not instance of Runnable or Event");
         }
         Assertions.assertEquals(countIteration, list.size());
     }
