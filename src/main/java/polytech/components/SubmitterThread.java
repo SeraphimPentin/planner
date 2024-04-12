@@ -21,7 +21,11 @@ public class SubmitterThread extends Thread {
     public void run() {
         while (true) {
             Task task = taskGenerator.createRandomTask();
-            queue.add(task);
+            try {
+                queue.put(task);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }
