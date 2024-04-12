@@ -35,10 +35,10 @@ public class Planner extends Thread implements TaskActable {
     private final Map<Integer, Queue<FJPTask>> suspendedTasks = new HashMap<>();
 
     {
-        suspendedTasks.put(Priority.HIGH.getValue(), new ConcurrentLinkedQueue<>()); //middle задачи ожидающие выполнения high задач
+        suspendedTasks.put(Priority.HIGH.getValue(), new ConcurrentLinkedQueue<>());
         suspendedTasks.put(Priority.MIDDLE.getValue(), new ConcurrentLinkedQueue<>());
         suspendedTasks.put(Priority.LOW.getValue(), new ConcurrentLinkedQueue<>());
-        suspendedTasks.put(Priority.LOWEST.getValue(), new ConcurrentLinkedQueue<>()); //FIXME remove
+        suspendedTasks.put(Priority.LOWEST.getValue(), new ConcurrentLinkedQueue<>());
     }
 
     public Planner(BlockingQueue<Task> taskQueue) {
@@ -77,13 +77,11 @@ public class Planner extends Thread implements TaskActable {
         forkJoinPool.submit(fjpTask);
     }
 
-    //FIXME Достаточно стрёмный контракт получается. Этот метод, знает что первая итерация у таски - это ивент
     private void handleEventTask(Task task) {
         Iterator<Runnable> iterator = task.iterations().iterator();
         Event event = (Event) iterator.next();
         iterator.remove();
         CompletableFuture.runAsync(event, eventPool).thenRun(() -> {
-            //release(task);
             this.scheduleTaskExecution(task);
         });
     }
