@@ -24,8 +24,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * -
  * <p>
  * Хранит очереди для задач следующим списком:
- *  0     1     2    3
- * HIGH MIDDLE LOW LOWEST
+ *    0     1     2    3
+ *  LOWEST LOW MIDDLE HIGH
  */
 public class TasksQueuesDispatcher {
     private final List<Queue<FJPTask>> tasksQueues = new ArrayList<>();
