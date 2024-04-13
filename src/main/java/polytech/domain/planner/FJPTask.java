@@ -51,22 +51,18 @@ public class FJPTask extends RecursiveAction implements TaskActable {
     }
 
     protected void preemptIfNeeded() {
-        boolean wasPreempted = false;
         while (highPriorityTasks.hasNext()) {
-            Queue<FJPTask> prioritizedTasks = highPriorityTasks.next();
-            for (Iterator<FJPTask> iterator = prioritizedTasks.iterator(); iterator.hasNext(); ) {
+            Queue<FJPTask> prizedTasksQueue = highPriorityTasks.next();
+            for (Iterator<FJPTask> iterator = prizedTasksQueue.iterator(); iterator.hasNext(); ) {
                 FJPTask task = iterator.next();
-                if (task.isDone()) {
+                if (!task.isDone()) {
+                    preempt(this.task);
+                    task.join();
+                } else {
                     iterator.remove();
-                    continue;
                 }
-                preempt(this.task);
-                wasPreempted = true;
-                task.join();
             }
         }
-        if (wasPreempted) {
-            start(task);
-        }
+        start(task);
     }
 }
