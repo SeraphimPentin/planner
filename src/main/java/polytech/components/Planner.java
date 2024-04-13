@@ -8,9 +8,9 @@ import polytech.domain.planner.FJPTask;
 import polytech.domain.planner.TaskActable;
 import polytech.enums.Priority;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
@@ -20,6 +20,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Semaphore;
 
+import org.apache.commons.collections4.iterators.ReverseListIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,13 +33,12 @@ public class Planner extends Thread implements TaskActable {
     private final Semaphore readyTasksSemaphore = new Semaphore(Properties.READY_TASKS_LIMIT);
     private final ExecutorService eventPool = Executors.newSingleThreadExecutor();
 
-    private final Map<Integer, Queue<FJPTask>> suspendedTasks = new HashMap<>();
+    private final List<Queue<FJPTask>> tasksQueues = new ArrayList<>();
 
     {
-        suspendedTasks.put(Priority.HIGH.getValue(), new ConcurrentLinkedQueue<>());
-        suspendedTasks.put(Priority.MIDDLE.getValue(), new ConcurrentLinkedQueue<>());
-        suspendedTasks.put(Priority.LOW.getValue(), new ConcurrentLinkedQueue<>());
-        suspendedTasks.put(Priority.LOWEST.getValue(), new ConcurrentLinkedQueue<>());
+        for (int i = 0; i < Priority.values().length; i++) {
+            tasksQueues.add(new ConcurrentLinkedQueue<>());
+        }
     }
 
     public Planner(BlockingQueue<Task> taskQueue) {
@@ -64,17 +64,21 @@ public class Planner extends Thread implements TaskActable {
         }
     }
 
-    private void scheduleTaskExecution(Task task) {
+    void scheduleTaskExecution(Task task) {
         activateIfReadyTasksAmountAllows(task);
 
-        int priority = task.priority().getValue();
+        Iterator<Queue<FJPTask>> prioritizedTasks = getPrioritizedTasksQueues(task);
+        Queue<FJPTask> tasksWithSamePriority = tasksQueues.get(task.priority().getValue());
 
-        Queue<FJPTask> highPrioritized = suspendedTasks.get(priority + 1);
-        Queue<FJPTask> lowPrioritized = suspendedTasks.get(priority);
-
-        FJPTask fjpTask = new FJPTask(task, highPrioritized, readyTasksSemaphore, this::handleEventTask);
-        lowPrioritized.add(fjpTask);
+        FJPTask fjpTask = new FJPTask(task, prioritizedTasks, readyTasksSemaphore, this::handleEventTask);
+        tasksWithSamePriority.add(fjpTask);
         forkJoinPool.submit(fjpTask);
+    }
+
+    private Iterator<Queue<FJPTask>> getPrioritizedTasksQueues(Task task) {
+        Priority priority = task.priority();
+        List<Queue<FJPTask>> queues = tasksQueues.subList(priority.getValue() + 1, Priority.values().length);
+        return new ReverseListIterator<>(queues);
     }
 
     private void handleEventTask(Task task) {

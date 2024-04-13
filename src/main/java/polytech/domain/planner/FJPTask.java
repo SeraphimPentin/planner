@@ -10,12 +10,12 @@ import java.util.function.Consumer;
 
 public class FJPTask extends RecursiveAction implements TaskActable {
     private final Task task;
-    private final Queue<FJPTask> highPriorityTasks;
+    private final Iterator<Queue<FJPTask>> highPriorityTasks;
     private final Semaphore readyTasksSemaphore;
     private final Consumer<Task> eventConsumer;
 
 
-    public FJPTask(Task task, Queue<FJPTask> highPriorityTasks, Semaphore readyTasksSemaphore, Consumer<Task> eventConsumer) {
+    public FJPTask(Task task, Iterator<Queue<FJPTask>> highPriorityTasks, Semaphore readyTasksSemaphore, Consumer<Task> eventConsumer) {
         this.task = task;
         this.highPriorityTasks = highPriorityTasks;
         this.readyTasksSemaphore = readyTasksSemaphore;
@@ -54,13 +54,16 @@ public class FJPTask extends RecursiveAction implements TaskActable {
         if (highPriorityTasks == null) {
             return;
         }
-        for (Iterator<FJPTask> iterator = highPriorityTasks.iterator(); iterator.hasNext(); ) {
-            FJPTask task = iterator.next();
-            if (!task.isDone()) {
-                preempt(this.task);
-                task.join();
-            } else {
-                iterator.remove();
+        while (highPriorityTasks.hasNext()) {
+            Queue<FJPTask> prizedTasksQueue = highPriorityTasks.next();
+            for (Iterator<FJPTask> iterator = prizedTasksQueue.iterator(); iterator.hasNext(); ) {
+                FJPTask task = iterator.next();
+                if (!task.isDone()) {
+                    preempt(this.task);
+                    task.join();
+                } else {
+                    iterator.remove();
+                }
             }
         }
         start(task);
