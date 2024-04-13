@@ -1,8 +1,6 @@
 package polytech.components.planner;
 
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import polytech.Properties;
 import polytech.domain.Event;
 import polytech.domain.Task;
@@ -17,6 +15,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Semaphore;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Planner extends Thread implements TaskActable {
 
@@ -64,11 +65,13 @@ public class Planner extends Thread implements TaskActable {
         forkJoinPool.submit(fjpTask);
     }
 
+    //FIXME Достаточно стрёмный контракт получается. Этот метод, знает что первая итерация у таски - это ивент
     private void handleEventTask(Task task) {
         Iterator<Runnable> iterator = task.iterations().iterator();
         Event event = (Event) iterator.next();
         iterator.remove();
         CompletableFuture.runAsync(event, eventPool).thenRun(() -> {
+            //release(task);
             this.scheduleTaskExecution(task);
         });
     }
