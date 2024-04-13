@@ -51,9 +51,6 @@ public class FJPTask extends RecursiveAction implements TaskActable {
     }
 
     protected void preemptIfNeeded() {
-        if (highPriorityTasks == null) {
-            return;
-        }
         while (highPriorityTasks.hasNext()) {
             Queue<FJPTask> prizedTasksQueue = highPriorityTasks.next();
             for (Iterator<FJPTask> iterator = prizedTasksQueue.iterator(); iterator.hasNext(); ) {
