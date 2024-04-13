@@ -11,6 +11,22 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+/**
+ * Компонент, инкапсулирующий диспетчеризацию очередей задач.
+ * Может для данной задачи дать:
+ * <ol>
+ *     <li>Очередь с задачами того же приоритета, что текущая задача</li>
+ *     <li>
+ *         Итератор по очередям задач большего приоритета, чем текущая задача.
+ *         Порядок итерирования - от очередей с большим приоритетом к меньшим.
+ *     </li>
+ * </ol>
+ * -
+ * <p>
+ * Хранит очереди для задач следующим списком:
+ *  0     1     2    3
+ * HIGH MIDDLE LOW LOWEST
+ */
 public class TasksQueuesDispatcher {
     private final List<Queue<FJPTask>> tasksQueues = new ArrayList<>();
 
@@ -25,9 +41,9 @@ public class TasksQueuesDispatcher {
     }
 
     public Iterator<Queue<FJPTask>> getPrioritizedTasksQueues(Task task) {
-        int currentPriority = task.priority().getValue() + 1;
+        int currentPriority = task.priority().getValue();
         int prioritiesCount = Priority.values().length;
-        List<Queue<FJPTask>> prioritizedTasksQueues = tasksQueues.subList(currentPriority, prioritiesCount);
+        List<Queue<FJPTask>> prioritizedTasksQueues = tasksQueues.subList(currentPriority + 1, prioritiesCount);
         return new ReverseListIterator<>(prioritizedTasksQueues);
     }
 
