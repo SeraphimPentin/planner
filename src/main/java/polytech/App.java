@@ -5,7 +5,7 @@ import java.util.Comparator;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 
-import polytech.components.Planner;
+import polytech.components.planner.Planner;
 import polytech.components.SubmitterThread;
 import polytech.components.TaskGenerator;
 import polytech.domain.Task;
